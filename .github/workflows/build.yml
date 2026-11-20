@@ -188,7 +188,7 @@ jobs:
           }'''
           }
           for name, body in replacements.items():
-              pattern = r"(?s)(?:int|float|char \*)\\s+" + name + r"\\([^)]*\\)\\s*\\{.*?\\n\\}"
+              pattern = r"(?s)(?:int|float|char \*)\s+" + name + r"\([^)]*\)\s*\{.*?\n\}"
               s, n = re.subn(pattern, body, s, count=1)
               if n != 1:
                   raise SystemExit(f"Could not safely patch {name}: matches={n}")

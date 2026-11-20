@@ -13,10 +13,10 @@ LineageOS PSP is an Android-inspired, lightweight homebrew environment for the P
 The first development milestone provides:
 
 - A bootable PSP homebrew entry point.
-- A basic home screen navigable with the PSP D-pad and buttons.
+- A first text-rendered home screen navigable with the PSP D-pad and buttons (the full graphical Android-inspired shell comes later).
 - Initial Settings and Recovery screens.
 - A first-start Quick Setup that is not repeated once saved.
-- A persistent dark/light appearance preference on the Memory Stick.
+- A dark/light appearance preference applied by the initial interface and saved on the Memory Stick.
 - An automated GitHub Actions build producing EBOOT.PBP.
 
 The Applications entry is currently a placeholder. The desktop environment, browser integration, connectivity services, AI features, PSP Store, and .PSP package installer/runtime are future work.

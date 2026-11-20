@@ -175,11 +175,13 @@ jobs:
           prerelease: true
           make_latest: false
           overwrite_files: true
-          files: |\n            dist/EBOOT.PBP\n            dist/LineageOS-PSP-0.1.1.zip
+          files: |
+            dist/EBOOT.PBP
+            dist/LineageOS-PSP-0.1.1.zip
           body: |
             LineageOS PSP 0.1.1 — première version basée sur le code source de CyanogenPSP de Joel16.
 
             Cette version conserve l'architecture et les fonctionnalités héritées du projet original, avec une première couche d'identité LineageOS PSP.
 
-            Installation : PSP/GAME/LineageOS-PSP/EBOOT.PBP
+            Installation : extraire le ZIP dans PSP/GAME/LineageOS-PSP/ afin de conserver system/ et modules/.
             Le firmware de la PSP n'est pas remplacé. Le programme se lance depuis le menu Jeux (ou PPSSPP).

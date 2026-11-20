@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131c">
+  <meta name="description" content="LineageOS PSP — un nouvel environnement logiciel libre imaginé pour la PlayStation Portable.">
+  <title>LineageOS PSP — Accueil</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b0e15;--panel:#141a27;--line:#283247;--muted:#aab4c7;--cyan:#55d9e8;--blue:#6b8cff}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -10%,#203b5b 0,transparent 42%),var(--bg);color:#f4f7ff;font:16px/1.6 system-ui,-apple-system,Segoe UI,sans-serif}
+    a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 40px));margin:auto}
+    header{height:76px;border-bottom:1px solid #ffffff14;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center;font-weight:750;letter-spacing:.02em}.mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--cyan),var(--blue));display:grid;place-items:center;color:#08111c;font-weight:900}
+    nav{display:flex;gap:24px;color:var(--muted);font-size:14px}nav a:hover,.muted-link:hover{color:white}
+    .hero{padding:92px 0 74px;max-width:800px}.eyebrow{color:var(--cyan);font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+    h1{font-size:clamp(42px,7vw,76px);line-height:1.03;letter-spacing:-.055em;margin:18px 0 22px}.hero p{font-size:19px;color:var(--muted);max-width:680px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.btn{padding:12px 19px;border-radius:12px;font-weight:700;border:1px solid var(--line);background:#ffffff08}.primary{background:linear-gradient(110deg,var(--cyan),#8ba7ff);color:#07121d;border:0}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-bottom:76px}.card{background:linear-gradient(150deg,#182131,#101520);border:1px solid var(--line);border-radius:18px;padding:24px;min-height:190px}.card small{color:var(--cyan);font-weight:800;letter-spacing:.12em;text-transform:uppercase}.card h2{font-size:21px;margin:12px 0 8px}.card p{color:var(--muted);margin:0}.arrow{display:inline-block;margin-top:18px;color:var(--cyan);font-weight:700}
+    footer{border-top:1px solid #ffffff14;padding:25px 0;color:#8995aa;font-size:13px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    @media(max-width:700px){nav{gap:13px;font-size:12px}.grid{grid-template-columns:1fr}.hero{padding:68px 0 50px}.hero p{font-size:17px}}
+  </style>
+</head>
+<body>
+<header class="wrap"><a class="brand" href="/"><span class="mark">L</span><span>LineageOS <span style="color:var(--cyan)">PSP</span></span></a><nav><a href="/">Accueil</a><a href="/store/">Store</a><a href="/api/">API</a><a href="https://github.com/PSPDEVtemporaryaccount/LineageOS-PSP">GitHub</a></nav></header>
+<main class="wrap">
+  <section class="hero"><div class="eyebrow">Un projet communautaire indépendant</div><h1>Une nouvelle vie<br>pour la PSP.</h1><p>LineageOS PSP est un projet homebrew qui imagine un environnement logiciel moderne pour la PlayStation Portable, inspiré de l'expérience Android et de l'esprit du logiciel libre.</p><div class="actions"><a class="btn primary" href="/store/">Découvrir le Store</a><a class="btn" href="https://github.com/PSPDEVtemporaryaccount/LineageOS-PSP">Voir le code source ↗</a></div></section>
+  <section class="grid">
+    <a class="card" href="/store/"><small>01 · Applications</small><h2>LineageOS PSP Store</h2><p>Un catalogue dédié aux applications et jeux conçus pour l'environnement LineageOS PSP.</p><span class="arrow">Explorer le Store →</span></a>
+    <a class="card" href="/api/"><small>02 · Développeurs</small><h2>API officielle</h2><p>Une interface destinée au catalogue, aux métadonnées et au système de mises à jour.</p><span class="arrow">Documentation API →</span></a>
+    <a class="card" href="https://github.com/PSPDEVtemporaryaccount/LineageOS-PSP"><small>03 · Open source</small><h2>Construire ensemble</h2><p>Suivre le développement, consulter les sources et contribuer au projet sur GitHub.</p><span class="arrow">Ouvrir GitHub ↗</span></a>
+  </section>
+</main>
+<footer class="wrap"><span>LineageOS PSP · Projet indépendant</span><span>Non affilié à Sony ou à LineageOS officiel.</span></footer>
+</body></html>

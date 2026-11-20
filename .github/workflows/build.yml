@@ -133,24 +133,25 @@ jobs:
           test -s EBOOT.PBP
           file EBOOT.PBP || true
 
-      - name: Package complete install folder
+      - name: Verify complete install folder
         run: |
           set -euo pipefail
-          cd CyanogenPSP
-          test -s EBOOT.PBP
-          test -d modules
-          test -d system
-          test -d system/settings
-          zip -qr ../LineageOS-PSP-0.1.1.zip EBOOT.PBP modules system
-          test -s ../LineageOS-PSP-0.1.1.zip
+          test -s CyanogenPSP/EBOOT.PBP
+          test -d CyanogenPSP/modules
+          test -d CyanogenPSP/system
+          test -d CyanogenPSP/system/settings
+          test -s CyanogenPSP/modules/display.prx
+          test -s CyanogenPSP/modules/control.prx
+          test -s CyanogenPSP/modules/impose.prx
 
-      - name: Upload complete installation package and standalone EBOOT
+      - name: Upload complete install folder
         uses: actions/upload-artifact@v4
         with:
           name: LineageOS-PSP-0.1.1
           path: |
             CyanogenPSP/EBOOT.PBP
-            LineageOS-PSP-0.1.1.zip
+            CyanogenPSP/modules/
+            CyanogenPSP/system/
           if-no-files-found: error
           retention-days: 7
 
@@ -166,10 +167,16 @@ jobs:
           name: LineageOS-PSP-0.1.1
           path: dist
 
-      - name: Verify installation files
+      - name: Package and verify installation ZIP
         run: |
+          set -euo pipefail
           test -s dist/EBOOT.PBP
-          test -s dist/LineageOS-PSP-0.1.1.zip
+          test -d dist/modules
+          test -d dist/system/settings
+          cd dist
+          zip -qr ../LineageOS-PSP-0.1.1.zip EBOOT.PBP modules system
+          cd ..
+          test -s LineageOS-PSP-0.1.1.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2

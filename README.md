@@ -1,53 +1,40 @@
 # LineageOS PSP
 
-**Version:** 0.2.0  
-**Status:** Early development  
-**Target:** Sony PSP (initial target: PSP-3000)
+**Version de développement : 0.1.0**
 
-LineageOS PSP is a lightweight PSP homebrew environment inspired by the Android 11/14 user experience. It is not an Android or Linux port and does not replace the official PSP firmware or XMB.
+LineageOS PSP est une évolution du projet homebrew **CyanogenPSP** de Joel16. Le cœur de l'application est récupéré depuis le dépôt original, puis adapté avec des couches propres à LineageOS PSP.
 
-## What's new in 0.2.0
+## Source de base et attribution
 
-- A graphical 480 × 272 home screen drawn directly to the PSP framebuffer.
-- Visual application cards, icons, selected-card outline, top bar, and bottom control hints.
-- Graphical Settings, Quick Setup, and Recovery screens.
-- D-pad navigation and CROSS/CIRCLE actions.
-- Persistent dark/light appearance preference and first-start state.
-- GitHub Actions builds EBOOT.PBP and publishes it as a standalone GitHub Release asset (not wrapped in a ZIP). A short-lived Actions artifact is also kept as a fallback.
+- Projet d'origine : https://github.com/omarmc9203/CyanogenPSP
+- Auteur crédité dans la licence d'origine : Joel16
+- Révision source utilisée pour la version 0.1.0 : `0a98c8b0c7503b54612e4d8d2de1f3010bc48fa4`
+- La licence d'origine est conservée dans [LICENSE-CyanogenPSP](LICENSE-CyanogenPSP).
 
-## Download
+Le code original n'est pas présenté comme ayant été écrit par l'équipe LineageOS PSP. Les adaptations propres au projet sont maintenues séparément dans `overlays/lineage/`.
 
-Open the [LineageOS PSP 0.2.0 release](https://github.com/PSPDEVtemporaryaccount/LineageOS-PSP/releases/tag/v0.2.0) and download **EBOOT.PBP** under Assets.
+## Couches LineageOS PSP 0.1.0
 
-Direct asset URL:
-https://github.com/PSPDEVtemporaryaccount/LineageOS-PSP/releases/download/v0.2.0/EBOOT.PBP
+- Identité du module et titre de lancement LineageOS PSP.
+- Version produit indépendante : 0.1.0.
+- Compilation automatisée avec PSPSDK dans GitHub Actions.
+- Les écrans et préférences de premier démarrage de CyanogenPSP sont conservés : l'état `system/settings/boot.bin` est persistant, afin que l'accueil initial ne soit pas redemandé à chaque lancement.
+- Le lancement reste manuel depuis le menu Jeux de la PSP ou depuis PPSSPP. Aucun remplacement du firmware ni démarrage automatique à l'allumage n'est effectué.
 
-## Install
+## Fonctionnalités héritées
 
-1. On the Memory Stick, create `PSP/GAME/LineageOS-PSP/`.
-2. Copy the downloaded `EBOOT.PBP` into that folder.
-3. Launch LineageOS PSP from the PSP Game menu.
+La base CyanogenPSP fournit notamment son interface homebrew, écran de verrouillage, menus système, gestionnaire de fichiers, galerie, lecteur multimédia, lanceur de jeux, paramètres et navigateur NetFront du système PSP.
 
-The browser on Android may save the file in Downloads. Android does not let a remote GitHub workflow silently place a file in PPSSPP's private folder or on a physical PSP Memory Stick; move/copy it using the file manager or USB transfer.
+Certaines fonctions décrites comme expérimentales ou inachevées dans le projet d'origine restent expérimentales ou inachevées ici. En particulier, la messagerie adhoc n'est pas présentée comme pleinement fonctionnelle.
 
-## Controls
+## Compilation
 
-- D-pad: navigate.
-- CROSS: select / confirm.
-- CIRCLE: go back or exit.
-- Recovery: CROSS returns to the interface; CIRCLE exits to XMB.
+Le workflow :
+1. récupère la révision amont épinglée ;
+2. applique les adaptations de version et d'identité ;
+3. compile les modules PRX requis par l'application ;
+4. compile et publie le fichier autonome `EBOOT.PBP`.
 
-## Build
+Le fichier de sortie est destiné à être placé dans `PSP/GAME/LineageOS-PSP/EBOOT.PBP`.
 
-The project uses PSPSDK and the PSPDEV toolchain. GitHub Actions builds on pushes to main, pull requests, and manual workflow dispatches. Main-branch builds publish/update the 0.2.0 prerelease asset.
-
-For a local PSPDEV environment:
-
-    make clean
-    make
-
-The resulting EBOOT.PBP is generated in the repository root.
-
-## Application package format
-
-The proposed .PSP package format is documented in [docs/PSP-PACKAGE-FORMAT-0.1.md](docs/PSP-PACKAGE-FORMAT-0.1.md). It remains separate from the system executable; the package manager and runtime are future work.
+**Important :** une compilation réussie ne remplace pas un test sur PPSSPP et sur une PSP physique. Le firmware et le menu XMB officiels restent intacts.

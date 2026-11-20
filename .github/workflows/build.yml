@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -19,14 +19,38 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+
       - name: Build EBOOT.PBP
         run: |
           make clean
           make
-      - name: Publish EBOOT.PBP
+          test -s EBOOT.PBP
+          file EBOOT.PBP || true
+
+      - name: Publish standalone EBOOT.PBP release asset
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.2.0
+          name: LineageOS PSP 0.2.0
+          target_commitish: main
+          prerelease: true
+          make_latest: false
+          overwrite_files: true
+          files: EBOOT.PBP
+          body: |
+            LineageOS PSP 0.2.0 — version de développement.
+
+            Téléchargement direct : EBOOT.PBP (fichier autonome, sans ZIP).
+            Installation : PSP/GAME/LineageOS-PSP/EBOOT.PBP
+
+            Cette version introduit une interface graphique 2D pour l'écran 480 × 272.
+            Testez-la sur PPSSPP avant utilisation sur une PSP physique.
+
+      - name: Keep CI artifact as fallback
         uses: actions/upload-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.0-EBOOT
+          name: LineageOS-PSP-0.2.0-EBOOT
           path: EBOOT.PBP
           if-no-files-found: error
           retention-days: 14

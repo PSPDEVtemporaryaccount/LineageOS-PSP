@@ -1,7 +1,7 @@
 #ifndef LINEAGEOS_CONFIG_H
 #define LINEAGEOS_CONFIG_H
 
-#define LINEAGEOS_VERSION "0.1.0"
+#define LINEAGEOS_VERSION "0.2.0"
 
 typedef struct {
     int format_version;

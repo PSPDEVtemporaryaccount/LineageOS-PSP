@@ -35,6 +35,15 @@ jobs:
           mkdir -p include/sys
           cp ../overlays/lineage/include/sys/fd_set.h include/sys/fd_set.h
 
+          # Avoid the legacy image variable colliding with the modern POSIX select() declaration.
+          sed -i 's/\\*select, \\*deselect;/\\*selectIcon, \\*deselect;/' settingsMenu.h
+          sed -i \
+            -e 's/select = oslLoadImageFilePNG/selectIcon = oslLoadImageFilePNG/g' \
+            -e 's/!select ||/!selectIcon ||/g' \
+            -e 's/oslDrawImageXY(select,/oslDrawImageXY(selectIcon,/g' \
+            -e 's/oslDeleteImage(select)/oslDeleteImage(selectIcon)/g' \
+            settingsMenu.c
+
           sed -i 's/^TARGET = CyanogenPSP$/TARGET = LineageOS-PSP/' Makefile
           sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.0/' Makefile
           sed -i 's/-Wall -Werror/-Wall/' Makefile

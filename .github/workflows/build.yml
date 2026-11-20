@@ -48,6 +48,9 @@ jobs:
           # Restore the legacy OSLib fd_set include path using the current PSPDEV header.
           mkdir -p include/sys
           cp ../overlays/lineage/include/sys/fd_set.h include/sys/fd_set.h
+          # Keep battery EEPROM write operations disabled in the LineageOS layer.
+          sed -i 's|chWriteSerial(BatSer);|/* LineageOS PSP disables battery EEPROM writes. */|' include/common.c
+          grep -Fq 'LineageOS PSP disables battery EEPROM writes' include/common.c
 
           # Avoid the legacy image variable colliding with the POSIX select() declaration.
           sed -i 's/[*]select, [*]deselect;/*selectIcon, *deselect;/' settingsMenu.h

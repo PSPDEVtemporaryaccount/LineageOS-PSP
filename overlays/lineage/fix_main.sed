@@ -8,7 +8,7 @@
 	} else {\
 		r = 0; g = 149; b = 135;\
 	}
-/^[[:space:]]*FILE \* firstBootTxt = fopen("system\/settings\/boot.bin", "w");/ ,/^[[:space:]]*fclose(firstBootTxt);$/c\
+/^[[:space:]]*FILE \* firstBootTxt = fopen("system\/settings\/boot.bin", "w");/,/^[[:space:]]*fclose(firstBootTxt);$/c\
 				FILE * firstBootTxt = fopen("system/settings/boot.bin", "w");\
 				if (firstBootTxt) {\
 					fprintf(firstBootTxt, "0");\

@@ -117,7 +117,12 @@ jobs:
           done
 
       - name: Harden first-boot configuration file handling
-        run: python3 overlays/lineage/fix_startup.py
+        run: |
+          set -euo pipefail
+          sed -i -f overlays/lineage/fix_startup.sed CyanogenPSP/include/utils.c
+          sed -i -f overlays/lineage/fix_main.sed CyanogenPSP/main.c
+          grep -q 'if (!temp) return value;' CyanogenPSP/include/utils.c
+          grep -q 'if (temp)' CyanogenPSP/main.c
 
       - name: Compile LineageOS PSP
         run: |

@@ -38,7 +38,7 @@ static void header(const char *screen)
 
 static void draw_home(void)
 {
-    const char *items[] = { "Applications", "Settings", "Recovery", "Power off" };
+    const char *items[] = { "Applications", "Settings", "Recovery", "Exit to XMB" };
     int i;
 
     pspDebugScreenClear();
@@ -121,6 +121,9 @@ static void draw_recovery(void)
 
 static void render(void)
 {
+    pspDebugScreenSetBackColor(g_config.dark_theme ? 0xFF101018 : 0xFFF0F0F4);
+    pspDebugScreenSetTextColor(g_config.dark_theme ? 0xFFFFFFFF : 0xFF202030);
+
     if (!g_config.quick_setup_done) {
         draw_quick_setup();
     } else if (g_screen == SCREEN_SETTINGS) {

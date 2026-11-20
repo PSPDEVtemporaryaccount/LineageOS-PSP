@@ -47,6 +47,8 @@ jobs:
         run: |
           set -euo pipefail
           cd CyanogenPSP
+          # The upstream PRX makefiles use an obsolete GCC switch removed by current PSPDEV.
+          sed -i 's/-mno-crt0 //g' prx/display/Makefile prx/control/Makefile prx/impose/Makefile
           mkdir -p modules
           for module in display control impose; do
             make -C "prx/$module" clean

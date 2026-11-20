@@ -24,6 +24,20 @@ jobs:
         run: |
           git clone https://github.com/omarmc9203/CyanogenPSP.git CyanogenPSP
           git -C CyanogenPSP checkout 0a98c8b0c7503b54612e4d8d2de1f3010bc48fa4
+          git clone --recurse-submodules https://github.com/dogo/oslib.git OSLib
+          git -C OSLib checkout c9ab75c7a2b9a255ed126a21288f9f4c389fb266
+          git -C OSLib submodule update --init --recursive
+
+      - name: Build modern OSLib against the active PSPDEV toolchain
+        run: |
+          set -euo pipefail
+          make -C OSLib lib
+          test -s OSLib/libosl.a
+          make -C OSLib install DESTDIR="$GITHUB_WORKSPACE/OSLibInstall"
+          OSLIB_HEADERS="$GITHUB_WORKSPACE/OSLibInstall/usr/local/pspdev/psp/include/oslib"
+          test -d "$OSLIB_HEADERS"
+          cp -a "$OSLIB_HEADERS/." CyanogenPSP/include/oslib/
+          cp OSLib/libosl.a CyanogenPSP/libs/libosl.a
 
       - name: Apply LineageOS PSP compatibility and identity layers
         shell: bash
@@ -51,6 +65,7 @@ jobs:
           sed -i 's/^TARGET = CyanogenPSP$/TARGET = LineageOS-PSP/' Makefile
           sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.0/' Makefile
           sed -i 's/-Wall -Werror/-Wall/' Makefile
+          sed -i 's/^CFLAGS = /CFLAGS = -fcommon /' Makefile
           sed -i 's/^PSP_EBOOT_TITLE =.*/PSP_EBOOT_TITLE = LineageOS PSP v$(VERSION)/' Makefile
           sed -i 's/PSP_MODULE_INFO("CyanogenPSP",[[:space:]]*1, 6, 0);/PSP_MODULE_INFO("LineageOS PSP", 1, 0, 1);/' main.c
           sed -i 's/CyanogenPSP/LineageOS PSP/g' main.c

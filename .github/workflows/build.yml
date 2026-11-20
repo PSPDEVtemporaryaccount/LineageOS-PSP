@@ -41,6 +41,7 @@ jobs:
           ! grep -Fq '*select, *deselect;' settingsMenu.h
           sed -i \
             -e 's/select = oslLoadImageFilePNG/selectIcon = oslLoadImageFilePNG/g' \
+            -e 's/deselectIcon = oslLoadImageFilePNG/deselect = oslLoadImageFilePNG/g' \
             -e 's/!select ||/!selectIcon ||/g' \
             -e 's/oslDrawImageXY(select,/oslDrawImageXY(selectIcon,/g' \
             -e 's/oslDeleteImage(select)/oslDeleteImage(selectIcon)/g' \

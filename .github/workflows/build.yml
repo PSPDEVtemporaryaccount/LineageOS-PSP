@@ -57,6 +57,7 @@ jobs:
 
           # Adapt two declarations that changed with the modern PSPDEV compiler/headers.
           grep -RIl 'pspTime' . | xargs -r sed -i 's/pspTime/ScePspDateTime/g'
+          grep -RIl 'time.minutes' . | xargs -r sed -i 's/time\\.minutes/time.minute/g'
           sed -i 's/int imposeSetVolume();/int imposeSetVolume(int value);/' homeMenu.c
 
           # Fail early if any of the required overlays did not apply.

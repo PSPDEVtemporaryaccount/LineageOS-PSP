@@ -36,7 +36,9 @@ jobs:
           cp ../overlays/lineage/include/sys/fd_set.h include/sys/fd_set.h
 
           # Avoid the legacy image variable colliding with the modern POSIX select() declaration.
-          sed -i 's/\\*select, \\*deselect;/\\*selectIcon, \\*deselect;/' settingsMenu.h
+          sed -i 's/[*]select, [*]deselect;/*selectIcon, *deselect;/' settingsMenu.h
+          grep -Fq '*selectIcon, *deselect;' settingsMenu.h
+          ! grep -Fq '*select, *deselect;' settingsMenu.h
           sed -i \
             -e 's/select = oslLoadImageFilePNG/selectIcon = oslLoadImageFilePNG/g' \
             -e 's/!select ||/!selectIcon ||/g' \

@@ -50,6 +50,11 @@ jobs:
           cp ../overlays/lineage/include/sys/fd_set.h include/sys/fd_set.h
           # Keep battery EEPROM write operations disabled in the LineageOS layer.
           sed -i 's|chWriteSerial(BatSer);|/* LineageOS PSP disables battery EEPROM writes. */|' include/common.c
+          # The current OSLib API adds an explicit angle parameter; preserve the old zero-angle layout.
+          grep -RIl 'oslIntraFontSetStyle' . | xargs -r sed -i \
+            -e '/oslIntraFontSetStyle/s/,[[:space:]]*INTRAFONT_ALIGN_LEFT);/, 0, INTRAFONT_ALIGN_LEFT);/' \
+            -e '/oslIntraFontSetStyle/s/,[[:space:]]*INTRAFONT_ALIGN_CENTER);/, 0, INTRAFONT_ALIGN_CENTER);/' \
+            -e '/oslIntraFontSetStyle/s/,[[:space:]]*0);/, 0, 0);/'
           grep -Fq 'LineageOS PSP disables battery EEPROM writes' include/common.c
 
           # Avoid the legacy image variable colliding with the POSIX select() declaration.

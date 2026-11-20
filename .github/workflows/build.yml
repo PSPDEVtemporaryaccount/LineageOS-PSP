@@ -1,4 +1,4 @@
-name: Build LineageOS PSP 0.1.0
+name: Build LineageOS PSP 0.1.1
 
 on:
   push:
@@ -71,7 +71,7 @@ jobs:
 
           # Product identity and release version.
           sed -i 's/^TARGET = CyanogenPSP$/TARGET = LineageOS-PSP/' Makefile
-          sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.0/' Makefile
+          sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.1/' Makefile
           sed -i 's/-Wall -Werror/-Wall/' Makefile
           sed -i 's/^CFLAGS = /CFLAGS = -fcommon /' Makefile
           sed -i 's/^PSP_EBOOT_TITLE =.*/PSP_EBOOT_TITLE = LineageOS PSP v$(VERSION)/' Makefile
@@ -97,7 +97,7 @@ jobs:
 
           # Fail early if any of the required overlays did not apply.
           grep -q '^TARGET = LineageOS-PSP$' Makefile
-          grep -q '^VERSION = 0.1.0$' Makefile
+          grep -q '^VERSION = 0.1.1$' Makefile
           grep -q 'PSP_MODULE_INFO("LineageOS PSP", 1, 0, 1);' main.c
           grep -q 'ScePspDateTime time;' homeMenu.c
           grep -q 'int imposeSetVolume(int value);' homeMenu.c
@@ -116,6 +116,114 @@ jobs:
             cp "prx/$module/$module.prx" "modules/$module.prx"
           done
 
+      - name: Harden first-boot configuration file handling
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd CyanogenPSP
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("include/utils.c")
+          s = p.read_text()
+          replacements = {
+              "setFileDefaultsInt": r'''int setFileDefaultsInt(char *path, int value, int var)
+          {
+              FILE *temp;
+              if (!fileExists(path)) {
+                  temp = fopen(path, "w");
+                  if (temp) {
+                      fprintf(temp, "%d", value);
+                      fclose(temp);
+                  } else {
+                      return value;
+                  }
+              }
+              temp = fopen(path, "r");
+              if (!temp) return value;
+              if (fscanf(temp, "%d", &var) != 1) var = value;
+              fclose(temp);
+              return var;
+          }''',
+              "setFileDefaultsFloat": r'''float setFileDefaultsFloat(char *path, float value, float var)
+          {
+              FILE *temp;
+              if (!fileExists(path)) {
+                  temp = fopen(path, "w");
+                  if (temp) {
+                      fprintf(temp, "%f", value);
+                      fclose(temp);
+                  } else {
+                      return value;
+                  }
+              }
+              temp = fopen(path, "r");
+              if (!temp) return value;
+              if (fscanf(temp, "%f", &var) != 1) var = value;
+              fclose(temp);
+              return var;
+          }''',
+              "setFileDefaultsChar": r'''char * setFileDefaultsChar(char path[], char data[], char var[])
+          {
+              FILE *temp;
+              if (!fileExists(path)) {
+                  temp = fopen(path, "w");
+                  if (temp) {
+                      fprintf(temp, "%s", data);
+                      fclose(temp);
+                  } else {
+                      strcpy(var, data);
+                      return var;
+                  }
+              }
+              temp = fopen(path, "r");
+              if (!temp) {
+                  strcpy(var, data);
+                  return var;
+              }
+              if (fscanf(temp, "%255s", var) != 1) strcpy(var, data);
+              fclose(temp);
+              return var;
+          }'''
+          }
+          for name, body in replacements.items():
+              pattern = r"(?s)(?:int|float|char \*)\\s+" + name + r"\\([^)]*\\)\\s*\\{.*?\\n\\}"
+              s, n = re.subn(pattern, body, s, count=1)
+              if n != 1:
+                  raise SystemExit(f"Could not safely patch {name}: matches={n}")
+          p.write_text(s)
+
+          p = Path("main.c")
+          s = p.read_text()
+          old = '''\ttemp = fopen(rgbValuesPath, "r");
+          \tfscanf(temp, "%d %d %d", &r, &g, &b);
+          \tfclose(temp);'''
+          new = '''\ttemp = fopen(rgbValuesPath, "r");
+          \tif (temp) {
+          \t\tif (fscanf(temp, "%d %d %d", &r, &g, &b) != 3) {
+          \t\t\tr = 0; g = 149; b = 135;
+          \t\t}
+          \t\tfclose(temp);
+          \t} else {
+          \t\tr = 0; g = 149; b = 135;
+          \t}'''
+          if old not in s:
+              raise SystemExit("Could not find rgbValuesPath read block")
+          s = s.replace(old, new, 1)
+          s = s.replace('''\t\t\t\tFILE * firstBootTxt = fopen("system/settings/boot.bin", "w"); 
+          \t\t\t\tfprintf(firstBootTxt, "0");
+          \t\t\t\tfclose(firstBootTxt);''',
+          '''\t\t\t\tFILE * firstBootTxt = fopen("system/settings/boot.bin", "w");
+          \t\t\t\tif (firstBootTxt) {
+          \t\t\t\t\tfprintf(firstBootTxt, "0");
+          \t\t\t\t\tfclose(firstBootTxt);
+          \t\t\t\t}''', 1)
+          p.write_text(s)
+          PY
+          grep -q 'if (!temp) return value;' include/utils.c
+          grep -q 'if (temp)' main.c
+
       - name: Compile LineageOS PSP
         run: |
           set -euo pipefail
@@ -125,41 +233,56 @@ jobs:
           test -s EBOOT.PBP
           file EBOOT.PBP || true
 
-      - name: Upload standalone EBOOT.PBP artifact
+      - name: Package complete install folder
+        run: |
+          set -euo pipefail
+          cd CyanogenPSP
+          test -s EBOOT.PBP
+          test -d modules
+          test -d system
+          test -d system/settings
+          zip -qr ../LineageOS-PSP-0.1.1.zip EBOOT.PBP modules system
+          test -s ../LineageOS-PSP-0.1.1.zip
+
+      - name: Upload complete installation package and standalone EBOOT
         uses: actions/upload-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.0
-          path: CyanogenPSP/EBOOT.PBP
+          name: LineageOS-PSP-0.1.1
+          path: |
+            CyanogenPSP/EBOOT.PBP
+            LineageOS-PSP-0.1.1.zip
           if-no-files-found: error
           retention-days: 7
 
   publish:
-    name: Publish LineageOS PSP 0.1.0
+    name: Publish LineageOS PSP 0.1.1
     runs-on: ubuntu-latest
     needs: build
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     steps:
-      - name: Download EBOOT.PBP
+      - name: Download installation package
         uses: actions/download-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.0
+          name: LineageOS-PSP-0.1.1
           path: dist
 
-      - name: Verify EBOOT.PBP
-        run: test -s dist/EBOOT.PBP
+      - name: Verify installation files
+        run: |
+          test -s dist/EBOOT.PBP
+          test -s dist/LineageOS-PSP-0.1.1.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.0
-          name: LineageOS PSP 0.1.0
+          tag_name: v0.1.1
+          name: LineageOS PSP 0.1.1
           target_commitish: main
           prerelease: true
           make_latest: false
           overwrite_files: true
-          files: dist/EBOOT.PBP
+          files: |\n            dist/EBOOT.PBP\n            dist/LineageOS-PSP-0.1.1.zip
           body: |
-            LineageOS PSP 0.1.0 — première version basée sur le code source de CyanogenPSP de Joel16.
+            LineageOS PSP 0.1.1 — première version basée sur le code source de CyanogenPSP de Joel16.
 
             Cette version conserve l'architecture et les fonctionnalités héritées du projet original, avec une première couche d'identité LineageOS PSP.
 

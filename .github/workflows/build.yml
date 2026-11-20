@@ -64,6 +64,13 @@ jobs:
           sed -i 's/GetBatSer(BatSerCurrent);/BatSerCurrent = GetBatSer();/' recoveryMenu.c
           sed -i 's|WriteFile("ms0:/batser.bin", BatSerCurrent, 4);|WriteFile("ms0:/batser.bin", \&BatSerCurrent, 4);|' recoveryMenu.c
           grep -Fq 'BatSerCurrent = GetBatSer();' recoveryMenu.c
+          # Use POSIX case-insensitive comparison and match the app drawer's no-argument call.
+          sed -i '1i#include <strings.h>' fileManager.c
+          sed -i 's/stricmp/strcasecmp/g' fileManager.c
+          sed -i 's/int filemanage(int argc, char .*)/int filemanage(void)/' fileManager.c
+          sed -i 's/int filemanage();/int filemanage(void);/' fileManager.h
+          grep -q 'int filemanage(void)' fileManager.c
+          grep -q 'int filemanage(void);' fileManager.h
 
           # Fail early if any of the required overlays did not apply.
           grep -q '^TARGET = LineageOS-PSP$' Makefile

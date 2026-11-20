@@ -25,17 +25,17 @@ jobs:
           git clone https://github.com/omarmc9203/CyanogenPSP.git CyanogenPSP
           git -C CyanogenPSP checkout 0a98c8b0c7503b54612e4d8d2de1f3010bc48fa4
 
-      - name: Apply LineageOS PSP identity layer
+      - name: Apply LineageOS PSP compatibility and identity layers
         shell: bash
         run: |
           set -euo pipefail
           cd CyanogenPSP
 
-          # Restore the fd_set compatibility header removed from current PSPDEV newlib.
+          # Restore the legacy OSLib fd_set include path using the current PSPDEV header.
           mkdir -p include/sys
           cp ../overlays/lineage/include/sys/fd_set.h include/sys/fd_set.h
 
-          # Avoid the legacy image variable colliding with the modern POSIX select() declaration.
+          # Avoid the legacy image variable colliding with the POSIX select() declaration.
           sed -i 's/[*]select, [*]deselect;/*selectIcon, *deselect;/' settingsMenu.h
           grep -Fq '*selectIcon, *deselect;' settingsMenu.h
           ! grep -Fq '*select, *deselect;' settingsMenu.h
@@ -46,91 +46,24 @@ jobs:
             -e 's/oslDeleteImage(select)/oslDeleteImage(selectIcon)/g' \
             settingsMenu.c
 
+          # Product identity and release version.
           sed -i 's/^TARGET = CyanogenPSP$/TARGET = LineageOS-PSP/' Makefile
           sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.0/' Makefile
           sed -i 's/-Wall -Werror/-Wall/' Makefile
           sed -i 's/^PSP_EBOOT_TITLE =.*/PSP_EBOOT_TITLE = LineageOS PSP v$(VERSION)/' Makefile
-
           sed -i 's/PSP_MODULE_INFO("CyanogenPSP",[[:space:]]*1, 6, 0);/PSP_MODULE_INFO("LineageOS PSP", 1, 0, 1);/' main.c
           sed -i 's/CyanogenPSP/LineageOS PSP/g' main.c
 
-          # Modern PSPDEV uses ScePspDateTime; the upstream source used the old pspTime name.
+          # Adapt two declarations that changed with the modern PSPDEV compiler/headers.
           sed -i 's/pspTime/ScePspDateTime/g' homeMenu.c
-          # The PRX exports imposeSetVolume(int), so make the old declaration explicit for C23.
           sed -i 's/int imposeSetVolume();/int imposeSetVolume(int value);/' homeMenu.c
 
+          # Fail early if any of the required overlays did not apply.
+          grep -q '^TARGET = LineageOS-PSP$' Makefile
+          grep -q '^VERSION = 0.1.0$' Makefile
+          grep -q 'PSP_MODULE_INFO("LineageOS PSP", 1, 0, 1);' main.c
           grep -q 'ScePspDateTime time;' homeMenu.c
           grep -q 'int imposeSetVolume(int value);' homeMenu.c
-          grep -q '^TARGET = LineageOS-PSP
-          grep -q '^VERSION = 0.1.0$' Makefile
-          grep -q 'PSP_MODULE_INFO("LineageOS PSP", 1, 0, 1);' main.c
-
-      - name: Build required kernel modules
-        run: |
-          set -euo pipefail
-          cd CyanogenPSP
-          # The upstream PRX makefiles use an obsolete GCC switch removed by current PSPDEV.
-          sed -i 's/-mno-crt0 //g' prx/display/Makefile prx/control/Makefile prx/impose/Makefile
-          mkdir -p modules
-          for module in display control impose; do
-            make -C "prx/$module" clean
-            make -C "prx/$module"
-            test -s "prx/$module/$module.prx"
-            cp "prx/$module/$module.prx" "modules/$module.prx"
-          done
-
-      - name: Compile LineageOS PSP
-        run: |
-          set -euo pipefail
-          cd CyanogenPSP
-          make clean
-          make
-          test -s EBOOT.PBP
-          file EBOOT.PBP || true
-
-      - name: Upload standalone EBOOT.PBP artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: LineageOS-PSP-0.1.0
-          path: CyanogenPSP/EBOOT.PBP
-          if-no-files-found: error
-          retention-days: 7
-
-  publish:
-    name: Publish LineageOS PSP 0.1.0
-    runs-on: ubuntu-latest
-    needs: build
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-    steps:
-      - name: Download EBOOT.PBP
-        uses: actions/download-artifact@v4
-        with:
-          name: LineageOS-PSP-0.1.0
-          path: dist
-
-      - name: Verify EBOOT.PBP
-        run: test -s dist/EBOOT.PBP
-
-      - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v0.1.0
-          name: LineageOS PSP 0.1.0
-          target_commitish: main
-          prerelease: true
-          make_latest: false
-          overwrite_files: true
-          files: dist/EBOOT.PBP
-          body: |
-            LineageOS PSP 0.1.0 — première version basée sur le code source de CyanogenPSP de Joel16.
-
-            Cette version conserve l'architecture et les fonctionnalités héritées du projet original, avec une première couche d'identité LineageOS PSP.
-
-            Installation : PSP/GAME/LineageOS-PSP/EBOOT.PBP
-            Le firmware de la PSP n'est pas remplacé. Le programme se lance depuis le menu Jeux (ou PPSSPP).
- Makefile
-          grep -q '^VERSION = 0.1.0$' Makefile
-          grep -q 'PSP_MODULE_INFO("LineageOS PSP", 1, 0, 1);' main.c
 
       - name: Build required kernel modules
         run: |

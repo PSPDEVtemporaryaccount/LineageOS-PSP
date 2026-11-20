@@ -31,7 +31,7 @@ jobs:
       - name: Build modern OSLib against the active PSPDEV toolchain
         run: |
           set -euo pipefail
-          make -C OSLib lib
+          make -C OSLib libosl.a
           test -s OSLib/libosl.a
           make -C OSLib install DESTDIR="$GITHUB_WORKSPACE/OSLibInstall"
           OSLIB_HEADERS="$GITHUB_WORKSPACE/OSLibInstall/usr/local/pspdev/psp/include/oslib"

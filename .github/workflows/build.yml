@@ -60,9 +60,9 @@ jobs:
           grep -RIl 'time.minutes' . | xargs -r sed -i 's/time[.]minutes/time.minute/g'
           sed -i 's/int imposeSetVolume();/int imposeSetVolume(int value);/' homeMenu.c
           # GetBatSer returns the serial value; store that value before writing the dump.
-          sed -i 's/char BatSerCurrent\\[4\\];/u32 BatSerCurrent;/' recoveryMenu.c
+          sed -i 's/char BatSerCurrent.*/u32 BatSerCurrent;/' recoveryMenu.c
           sed -i 's/GetBatSer(BatSerCurrent);/BatSerCurrent = GetBatSer();/' recoveryMenu.c
-          sed -i 's/WriteFile("ms0:\\/batser.bin", BatSerCurrent, 4);/WriteFile("ms0:\\/batser.bin", \\&BatSerCurrent, 4);/' recoveryMenu.c
+          sed -i 's|WriteFile("ms0:/batser.bin", BatSerCurrent, 4);|WriteFile("ms0:/batser.bin", \\&BatSerCurrent, 4);|' recoveryMenu.c
           grep -Fq 'BatSerCurrent = GetBatSer();' recoveryMenu.c
 
           # Fail early if any of the required overlays did not apply.

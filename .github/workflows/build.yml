@@ -189,7 +189,7 @@ jobs:
           overwrite_files: true
           files: |
             dist/EBOOT.PBP
-            dist/LineageOS-PSP-0.1.1.zip
+            LineageOS-PSP-0.1.1.zip
           body: |
             LineageOS PSP 0.1.1 — première version basée sur le code source de CyanogenPSP de Joel16.
 

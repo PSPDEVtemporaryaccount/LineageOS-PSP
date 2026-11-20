@@ -31,6 +31,10 @@ jobs:
           set -euo pipefail
           cd CyanogenPSP
 
+          # Restore the fd_set compatibility header removed from current PSPDEV newlib.
+          mkdir -p include/sys
+          cp ../overlays/lineage/include/sys/fd_set.h include/sys/fd_set.h
+
           sed -i 's/^TARGET = CyanogenPSP$/TARGET = LineageOS-PSP/' Makefile
           sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.0/' Makefile
           sed -i 's/-Wall -Werror/-Wall/' Makefile

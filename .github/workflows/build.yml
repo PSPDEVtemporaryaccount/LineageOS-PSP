@@ -1,0 +1,32 @@
+name: Build LineageOS PSP
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Compile PSP homebrew
+    runs-on: ubuntu-latest
+    container:
+      image: pspdev/pspdev:latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Build EBOOT.PBP
+        run: |
+          make clean
+          make
+      - name: Publish EBOOT.PBP
+        uses: actions/upload-artifact@v4
+        with:
+          name: LineageOS-PSP-0.1.0-EBOOT
+          path: EBOOT.PBP
+          if-no-files-found: error
+          retention-days: 14

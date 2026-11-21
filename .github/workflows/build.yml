@@ -98,7 +98,7 @@ jobs:
           # Fail early if any of the required overlays did not apply.
           grep -q '^TARGET = LineageOS-PSP$' Makefile
           grep -q '^VERSION = 0.1.2$' Makefile
-          grep -q 'PSP_MODULE_INFO("LineageOS PSP", 1, 0, 1);' main.c
+          grep -q 'PSP_MODULE_INFO("LineageOS PSP", 1, 0, 2);' main.c
           grep -q 'ScePspDateTime time;' homeMenu.c
           grep -q 'int imposeSetVolume(int value);' homeMenu.c
 
@@ -128,7 +128,7 @@ jobs:
         run: |
           set -euo pipefail
           # The upstream CyanogenPSP source explicitly documents 53248 KiB for PPSSPP testing.
-          sed -i 's/PSP_HEAP_SIZE_KB(20\\*1024)/PSP_HEAP_SIZE_KB(53248)/' CyanogenPSP/main.c
+          sed -i 's/PSP_HEAP_SIZE_KB(20\*1024)/PSP_HEAP_SIZE_KB(53248)/' CyanogenPSP/main.c
           grep -q 'PSP_HEAP_SIZE_KB(53248)' CyanogenPSP/main.c
 
       - name: Compile LineageOS PSP

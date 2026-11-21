@@ -40,7 +40,9 @@ Certaines fonctions décrites comme expérimentales ou inachevées dans le proje
 
 ## Compilation
 
-Le workflow 0.1.2 applique aussi le profil mémoire PPSSPP de 53248 Ko avant la compilation.\n\nLe workflow :
+Le workflow 0.1.2 applique aussi le profil mémoire PPSSPP de 53248 Ko avant la compilation.
+
+Le workflow :
 1. récupère les révisions amont épinglées ;
 2. recompile OSLib pour le PSPSDK utilisé ;
 3. applique les adaptations de compatibilité et d'identité LineageOS PSP ;

@@ -1,6 +1,6 @@
 # LineageOS PSP
 
-**Version : 0.1.3 (profil PPSSPP)**
+**Version : 0.1.4 (profil PPSSPP)**
 
 LineageOS PSP est une évolution du projet homebrew **CyanogenPSP** de Joel16. Le cœur de l'application est récupéré depuis le dépôt original, puis adapté avec des couches propres à LineageOS PSP.
 
@@ -14,25 +14,25 @@ LineageOS PSP est une évolution du projet homebrew **CyanogenPSP** de Joel16. L
 - Révision OSLib utilisée : `c9ab75c7a2b9a255ed126a21288f9f4c389fb266`
 - Licence OSLib : GPL-2.0, reproduite dans [LICENSE-OSLib](LICENSE-OSLib).
 
-Les crédits et licences des composants tiers sont conservés. Les adaptations propres à LineageOS PSP sont appliquées pendant la compilation, sans modifier le dépôt original de Joel16.
+Les crédits et licences des composants tiers sont conservés. Les adaptations propres à LineageOS PSP sont appliquées pendant la compilation, sans modifier le dépôt original de Joel16. Les références d'identité héritées `CyanogenPSP` sont remplacées dans les fichiers sources compilés par `LineageOS PSP ver.0.1.4`. Le nom du dossier de travail interne reste `CyanogenPSP` uniquement pour les opérations de compilation.
 
-## Couches LineageOS PSP 0.1.3
+## Couches LineageOS PSP 0.1.4
 
-- Identité du module et titre de lancement LineageOS PSP.
-- Version produit indépendante : 0.1.3.
+- Identité embarquée dans le module PSP et le titre EBOOT : `LineageOS PSP ver.0.1.4`.
+- Version produit indépendante : 0.1.4.
 - Compatibilité avec le PSPSDK actuel : anciennes déclarations de dates, volume, sélecteur graphique, gestionnaire de fichiers et récupération adaptées.
 - OSLib est recompilée depuis ses sources avec le toolchain PSPDEV actif, au lieu de réutiliser l'ancienne bibliothèque binaire.
 - Les préférences de premier démarrage de CyanogenPSP sont conservées : l'état `system/settings/boot.bin` reste persistant, afin que l'accueil initial ne soit pas redemandé à chaque lancement.
 
 Le lancement reste manuel depuis le menu Jeux de la PSP ou depuis PPSSPP. Aucun remplacement du firmware ni démarrage automatique à l'allumage n'est effectué.
 
-## Profil de compilation PPSSPP 0.1.3
+## Profil de compilation PPSSPP 0.1.4
 
 Cette version configure le tas principal avec `PSP_HEAP_SIZE_KB(53248)`, valeur explicitement documentée dans le code source CyanogenPSP pour les tests sous PPSSPP. Le profil est destiné à l'émulateur ; il ne modifie pas le modèle de PSP déclaré par PPSSPP.
 
 Pour simuler une PSP-3000, sélectionner **PSP-2000/3000** dans les paramètres système de PPSSPP. Le choix du modèle est un réglage de l'émulateur, indépendant du fichier EBOOT.
 
-## Démarrage 0.1.3
+## Démarrage 0.1.4
 
 L'animation de démarrage et le sélecteur de langue initial sont temporairement contournés. Le programme entre directement dans le flux normal de premier démarrage, écran de verrouillage ou accueil. L'animation sera réintroduite après stabilisation du démarrage.
 
@@ -44,7 +44,7 @@ Certaines fonctions décrites comme expérimentales ou inachevées dans le proje
 
 ## Compilation
 
-Le workflow 0.1.3 applique aussi le profil mémoire PPSSPP de 53248 Ko avant la compilation.
+Le workflow 0.1.4 applique aussi le profil mémoire PPSSPP de 53248 Ko avant la compilation.
 
 Le workflow :
 1. récupère les révisions amont épinglées ;
@@ -53,8 +53,8 @@ Le workflow :
 4. compile les modules PRX requis ;
 5. compile et publie le fichier autonome `EBOOT.PBP`.
 
-Le ZIP de distribution contient le dossier `CyanogenPSP/` à sa racine. Il faut extraire son contenu directement dans `PSP/GAME/`, ce qui donne `PSP/GAME/CyanogenPSP/EBOOT.PBP`, ainsi que les dossiers `modules/` et `system/` au même niveau.
+Le ZIP de distribution contient le dossier `LineageOS PSP ver.0.1.4/` à sa racine. Il faut extraire ce dossier directement dans `PSP/GAME/`, avec `EBOOT.PBP`, `modules/` et `system/` à l'intérieur.
 
-**Ne pas renommer `CyanogenPSP`.** Ce nom de dossier est conservé conformément aux instructions d'installation du projet d'origine de Joel16. L'identité affichée dans le système et le titre de lancement restent **LineageOS PSP**.
+**Important :** le dossier de distribution porte désormais le nom versionné `LineageOS PSP ver.0.1.4`. Le dossier `CyanogenPSP` n'existe que dans l'environnement de compilation.
 
 **Important :** une compilation réussie ne remplace pas un test sur PPSSPP et sur une PSP physique. Le firmware et le menu XMB officiels restent intacts.

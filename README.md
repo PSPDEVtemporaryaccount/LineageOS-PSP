@@ -53,6 +53,8 @@ Le workflow :
 4. compile les modules PRX requis ;
 5. compile et publie le fichier autonome `EBOOT.PBP`.
 
-Le fichier de sortie est destiné à être placé dans `PSP/GAME/LineageOS-PSP/EBOOT.PBP`.
+Le ZIP de distribution contient le dossier `CyanogenPSP/` à sa racine. Il faut extraire son contenu directement dans `PSP/GAME/`, ce qui donne `PSP/GAME/CyanogenPSP/EBOOT.PBP`, ainsi que les dossiers `modules/` et `system/` au même niveau.
+
+**Ne pas renommer `CyanogenPSP`.** Ce nom de dossier est conservé conformément aux instructions d'installation du projet d'origine de Joel16. L'identité affichée dans le système et le titre de lancement restent **LineageOS PSP**.
 
 **Important :** une compilation réussie ne remplace pas un test sur PPSSPP et sur une PSP physique. Le firmware et le menu XMB officiels restent intacts.

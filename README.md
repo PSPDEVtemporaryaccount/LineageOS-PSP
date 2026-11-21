@@ -1,6 +1,6 @@
 # LineageOS PSP
 
-**Version : 0.1.2 (profil PPSSPP)**
+**Version : 0.1.3 (profil PPSSPP)**
 
 LineageOS PSP est une évolution du projet homebrew **CyanogenPSP** de Joel16. Le cœur de l'application est récupéré depuis le dépôt original, puis adapté avec des couches propres à LineageOS PSP.
 
@@ -16,21 +16,25 @@ LineageOS PSP est une évolution du projet homebrew **CyanogenPSP** de Joel16. L
 
 Les crédits et licences des composants tiers sont conservés. Les adaptations propres à LineageOS PSP sont appliquées pendant la compilation, sans modifier le dépôt original de Joel16.
 
-## Couches LineageOS PSP 0.1.2
+## Couches LineageOS PSP 0.1.3
 
 - Identité du module et titre de lancement LineageOS PSP.
-- Version produit indépendante : 0.1.2.
+- Version produit indépendante : 0.1.3.
 - Compatibilité avec le PSPSDK actuel : anciennes déclarations de dates, volume, sélecteur graphique, gestionnaire de fichiers et récupération adaptées.
 - OSLib est recompilée depuis ses sources avec le toolchain PSPDEV actif, au lieu de réutiliser l'ancienne bibliothèque binaire.
 - Les préférences de premier démarrage de CyanogenPSP sont conservées : l'état `system/settings/boot.bin` reste persistant, afin que l'accueil initial ne soit pas redemandé à chaque lancement.
 
 Le lancement reste manuel depuis le menu Jeux de la PSP ou depuis PPSSPP. Aucun remplacement du firmware ni démarrage automatique à l'allumage n'est effectué.
 
-## Profil de compilation PPSSPP 0.1.2
+## Profil de compilation PPSSPP 0.1.3
 
 Cette version configure le tas principal avec `PSP_HEAP_SIZE_KB(53248)`, valeur explicitement documentée dans le code source CyanogenPSP pour les tests sous PPSSPP. Le profil est destiné à l'émulateur ; il ne modifie pas le modèle de PSP déclaré par PPSSPP.
 
 Pour simuler une PSP-3000, sélectionner **PSP-2000/3000** dans les paramètres système de PPSSPP. Le choix du modèle est un réglage de l'émulateur, indépendant du fichier EBOOT.
+
+## Démarrage 0.1.3
+
+L'animation de démarrage et le sélecteur de langue initial sont temporairement contournés. Le programme entre directement dans le flux normal de premier démarrage, écran de verrouillage ou accueil. L'animation sera réintroduite après stabilisation du démarrage.
 
 ## Fonctionnalités héritées
 
@@ -40,7 +44,7 @@ Certaines fonctions décrites comme expérimentales ou inachevées dans le proje
 
 ## Compilation
 
-Le workflow 0.1.2 applique aussi le profil mémoire PPSSPP de 53248 Ko avant la compilation.
+Le workflow 0.1.3 applique aussi le profil mémoire PPSSPP de 53248 Ko avant la compilation.
 
 Le workflow :
 1. récupère les révisions amont épinglées ;

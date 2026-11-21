@@ -1,6 +1,6 @@
 # LineageOS PSP
 
-**Version de développement : 0.1.0**
+**Version : 0.1.2 (profil PPSSPP)**
 
 LineageOS PSP est une évolution du projet homebrew **CyanogenPSP** de Joel16. Le cœur de l'application est récupéré depuis le dépôt original, puis adapté avec des couches propres à LineageOS PSP.
 
@@ -26,6 +26,12 @@ Les crédits et licences des composants tiers sont conservés. Les adaptations p
 
 Le lancement reste manuel depuis le menu Jeux de la PSP ou depuis PPSSPP. Aucun remplacement du firmware ni démarrage automatique à l'allumage n'est effectué.
 
+## Profil de compilation PPSSPP 0.1.2
+
+Cette version configure le tas principal avec `PSP_HEAP_SIZE_KB(53248)`, valeur explicitement documentée dans le code source CyanogenPSP pour les tests sous PPSSPP. Le profil est destiné à l'émulateur ; il ne modifie pas le modèle de PSP déclaré par PPSSPP.
+
+Pour simuler une PSP-3000, sélectionner **PSP-2000/3000** dans les paramètres système de PPSSPP. Le choix du modèle est un réglage de l'émulateur, indépendant du fichier EBOOT.
+
 ## Fonctionnalités héritées
 
 La base CyanogenPSP fournit notamment son interface homebrew, écran de verrouillage, menus système, gestionnaire de fichiers, galerie, lecteur multimédia, lanceur de jeux, paramètres et navigateur NetFront du système PSP.
@@ -34,7 +40,7 @@ Certaines fonctions décrites comme expérimentales ou inachevées dans le proje
 
 ## Compilation
 
-Le workflow :
+Le workflow 0.1.2 applique aussi le profil mémoire PPSSPP de 53248 Ko avant la compilation.\n\nLe workflow :
 1. récupère les révisions amont épinglées ;
 2. recompile OSLib pour le PSPSDK utilisé ;
 3. applique les adaptations de compatibilité et d'identité LineageOS PSP ;

@@ -178,17 +178,24 @@ jobs:
           name: LineageOS-PSP-0.1.3
           path: dist
 
-      - name: Package and verify installation ZIP
+      - name: Package and verify CyanogenPSP-compatible installation ZIP
         run: |
           set -euo pipefail
           test -s dist/EBOOT.PBP
           test -d dist/modules
           test -d dist/system/settings
-          cd dist
-          zip -qr ../LineageOS-PSP-0.1.3.zip EBOOT.PBP modules system
+          mkdir -p package/CyanogenPSP
+          cp -a dist/EBOOT.PBP dist/modules dist/system package/CyanogenPSP/
+          test -s package/CyanogenPSP/EBOOT.PBP
+          test -d package/CyanogenPSP/modules
+          test -d package/CyanogenPSP/system/settings
+          cd package
+          zip -qr ../LineageOS-PSP-0.1.3.zip CyanogenPSP
           cd ..
-          test -s LineageOS-PSP-0.1.3.zip
-
+          unzip -Z1 LineageOS-PSP-0.1.3.zip | grep -Fqx 'CyanogenPSP/EBOOT.PBP'
+          unzip -Z1 LineageOS-PSP-0.1.3.zip | grep -Fq 'CyanogenPSP/modules/'
+          unzip -Z1 LineageOS-PSP-0.1.3.zip | grep -Fq 'CyanogenPSP/system/'
+ 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -206,5 +213,7 @@ jobs:
 
             Cette version conserve l'architecture et les fonctionnalités héritées du projet original, avec une première couche d'identité LineageOS PSP.
 
-            Installation : extraire le ZIP dans PSP/GAME/LineageOS-PSP/ afin de conserver system/ et modules/.
-            Le firmware de la PSP n'est pas remplacé. Le programme se lance depuis le menu Jeux (ou PPSSPP).
+            Installation : extraire le contenu de ce ZIP directement dans PSP/GAME/.
+            Le ZIP contient le dossier CyanogenPSP/ avec EBOOT.PBP, modules/ et system/.
+            Ne pas renommer CyanogenPSP : le nom est conservé pour respecter le fonctionnement attendu par le projet d'origine.
+            Le nom affiché dans l'interface reste LineageOS PSP. Le firmware de la PSP n'est pas remplacé.

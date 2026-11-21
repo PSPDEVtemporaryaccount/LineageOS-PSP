@@ -1,4 +1,4 @@
-name: Build LineageOS PSP 0.1.2
+name: Build LineageOS PSP 0.1.3
 
 on:
   push:
@@ -71,7 +71,7 @@ jobs:
 
           # Product identity and release version.
           sed -i 's/^TARGET = CyanogenPSP$/TARGET = LineageOS-PSP/' Makefile
-          sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.2/' Makefile
+          sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.3/' Makefile
           sed -i 's/-Wall -Werror/-Wall/' Makefile
           sed -i 's/^CFLAGS = /CFLAGS = -fcommon /' Makefile
           sed -i 's/^PSP_EBOOT_TITLE =.*/PSP_EBOOT_TITLE = LineageOS PSP v$(VERSION)/' Makefile
@@ -97,7 +97,7 @@ jobs:
 
           # Fail early if any of the required overlays did not apply.
           grep -q '^TARGET = LineageOS-PSP$' Makefile
-          grep -q '^VERSION = 0.1.2$' Makefile
+          grep -q '^VERSION = 0.1.3$' Makefile
           grep -q 'PSP_MODULE_INFO("LineageOS PSP", 1, 0, 2);' main.c
           grep -q 'ScePspDateTime time;' homeMenu.c
           grep -q 'int imposeSetVolume(int value);' homeMenu.c
@@ -123,6 +123,8 @@ jobs:
           sed -i -f overlays/lineage/fix_main.sed CyanogenPSP/main.c
           grep -q 'if (!temp) return value;' CyanogenPSP/include/utils.c
           grep -q 'if (temp)' CyanogenPSP/main.c
+          python3 overlays/lineage/disable_bootanimation.py
+          grep -q 'boot animation temporarily disabled' CyanogenPSP/main.c
 
       - name: Configure application heap for PPSSPP
         run: |
@@ -154,7 +156,7 @@ jobs:
       - name: Upload complete install folder
         uses: actions/upload-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.2
+          name: LineageOS-PSP-0.1.3
           path: |
             CyanogenPSP/EBOOT.PBP
             CyanogenPSP/modules/
@@ -163,7 +165,7 @@ jobs:
           retention-days: 7
 
   publish:
-    name: Publish LineageOS PSP 0.1.2
+    name: Publish LineageOS PSP 0.1.3
     runs-on: ubuntu-latest
     needs: build
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
@@ -171,7 +173,7 @@ jobs:
       - name: Download installation package
         uses: actions/download-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.2
+          name: LineageOS-PSP-0.1.3
           path: dist
 
       - name: Package and verify installation ZIP
@@ -181,24 +183,24 @@ jobs:
           test -d dist/modules
           test -d dist/system/settings
           cd dist
-          zip -qr ../LineageOS-PSP-0.1.2.zip EBOOT.PBP modules system
+          zip -qr ../LineageOS-PSP-0.1.3.zip EBOOT.PBP modules system
           cd ..
-          test -s LineageOS-PSP-0.1.2.zip
+          test -s LineageOS-PSP-0.1.3.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.2
-          name: LineageOS PSP 0.1.2
+          tag_name: v0.1.3
+          name: LineageOS PSP 0.1.3
           target_commitish: main
           prerelease: true
           make_latest: false
           overwrite_files: true
           files: |
             dist/EBOOT.PBP
-            LineageOS-PSP-0.1.2.zip
+            LineageOS-PSP-0.1.3.zip
           body: |
-            LineageOS PSP 0.1.2 — première version basée sur le code source de CyanogenPSP de Joel16.
+            LineageOS PSP 0.1.3 — première version basée sur le code source de CyanogenPSP de Joel16.
 
             Cette version conserve l'architecture et les fonctionnalités héritées du projet original, avec une première couche d'identité LineageOS PSP.
 

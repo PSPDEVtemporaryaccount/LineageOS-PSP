@@ -66,7 +66,8 @@ Le workflow :
 2. recompile OSLib pour le PSPSDK utilisé ;
 3. applique les adaptations de compatibilité et d'identité LineageOS PSP ;
 4. compile les modules PRX requis ;
-5. compile Tilefinch avec le transport PSP natif et son résolveur DoH ;\n6. compile LineageOS PSP et publie les deux dossiers d'installation.
+5. compile Tilefinch avec le transport PSP natif et son résolveur DoH ;
+6. compile LineageOS PSP et publie les deux dossiers d'installation.
 
 Le ZIP de distribution contient deux dossiers à sa racine : `LineageOS PSP ver.0.1.5/` et `TILEFINCH/`. Extraire les deux directement dans `PSP/GAME/`. Le dossier `TILEFINCH/` doit rester à cet emplacement pour que le bouton Internet de LineageOS PSP puisse lancer le navigateur.
 

@@ -1,4 +1,4 @@
-name: Build LineageOS PSP 0.1.4
+name: Build LineageOS PSP 0.1.5
 
 on:
   push:
@@ -71,7 +71,7 @@ jobs:
 
           # Product identity and release version.
           sed -i 's/^TARGET = CyanogenPSP$/TARGET = LineageOS-PSP/' Makefile
-          sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.4/' Makefile
+          sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.5/' Makefile
           # Emit a linker map so PPSSPP crash addresses can be mapped back to symbols.
           sed -i 's|^LDFLAGS =.*|LDFLAGS = -Wl,-Map,LineageOS-PSP.map|' Makefile
           sed -i 's/-Wall -Werror/-Wall/' Makefile
@@ -99,7 +99,7 @@ jobs:
 
           # Fail early if any of the required overlays did not apply.
           grep -q '^TARGET = LineageOS-PSP$' Makefile
-          grep -q '^VERSION = 0.1.4$' Makefile
+          grep -q '^VERSION = 0.1.5$' Makefile
           grep -q 'PSP_MODULE_INFO("LineageOS PSP", 1, 0, 2);' main.c
           grep -q 'ScePspDateTime time;' homeMenu.c
           grep -q 'int imposeSetVolume(int value);' homeMenu.c
@@ -122,13 +122,47 @@ jobs:
         run: |
           set -euo pipefail
           # The PSPDEV container is Alpine-based and does not include Python by default.
-          apk add --no-cache python3
+          apk add --no-cache python3 cmake
           sed -i -f overlays/lineage/fix_startup.sed CyanogenPSP/include/utils.c
           sed -i -f overlays/lineage/fix_main.sed CyanogenPSP/main.c
           grep -q 'if (!temp) return value;' CyanogenPSP/include/utils.c
           grep -q 'if (temp)' CyanogenPSP/main.c
           python3 overlays/lineage/disable_bootanimation.py
           grep -q 'boot animation temporarily disabled' CyanogenPSP/main.c
+
+      - name: Fetch and build Tilefinch with native DNS over HTTPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PSPDEV="${PSPDEV:-/usr/local/pspdev}"
+          export PATH="$PSPDEV/bin:$PATH"
+
+          git clone https://github.com/stjanovitz/tilefinch.git Tilefinch
+          git -C Tilefinch checkout --detach c1a4b7ac97e8057bd5ec52a6a5383587090c2484
+
+          # Patch the owned PSP curl transport: DoH is mandatory, and the
+          # Cloudflare DoH endpoint is pinned by IP for its initial bootstrap.
+          python3 overlays/lineage/patch_tilefinch_doh.py Tilefinch/src/fetch.c
+          grep -Fq 'CURLOPT_DOH_URL' Tilefinch/src/fetch.c
+          grep -Fq 'cloudflare-dns.com:443:1.1.1.1' Tilefinch/src/fetch.c
+
+          # Tilefinch's own PSP preset builds the full launcher/browser install
+          # tree, including the fonts, TLS roots, A/B slots and third-party notices.
+          cd Tilefinch
+          cmake --preset psp
+          cmake --build build-preset-psp --target tilefinch-psp-install-tree -j2
+          cd ..
+
+          # The LineageOS Internet icon now launches this bundled EBOOT.
+          python3 overlays/lineage/launch_tilefinch.py CyanogenPSP/homeMenu.c
+
+          mkdir -p dist
+          cp -a Tilefinch/build-preset-psp/tilefinch-install/Tilefinch dist/TILEFINCH
+          test -s dist/TILEFINCH/EBOOT.PBP
+          test -s dist/TILEFINCH/slot-a/EBOOT.PBP
+          test -d dist/TILEFINCH/slot-b
+          test -d dist/TILEFINCH/data
+          test -d dist/TILEFINCH/NOTICES
 
       - name: Apply versioned LineageOS PSP identity to source code
         run: |
@@ -170,7 +204,7 @@ jobs:
       - name: Upload crash-diagnostics symbols
         uses: actions/upload-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.4-debug-symbols
+          name: LineageOS-PSP-0.1.5-debug-symbols
           path: debug-symbols/
           if-no-files-found: error
           retention-days: 30
@@ -189,23 +223,26 @@ jobs:
       - name: Stage complete install folder for distribution
         run: |
           set -euo pipefail
-          INSTALL_DIR="LineageOS PSP ver.0.1.4"
+          INSTALL_DIR="LineageOS PSP ver.0.1.5"
           mkdir -p "dist/$INSTALL_DIR"
           cp -a CyanogenPSP/EBOOT.PBP CyanogenPSP/modules CyanogenPSP/system "dist/$INSTALL_DIR/"
           test -s "dist/$INSTALL_DIR/EBOOT.PBP"
           test -d "dist/$INSTALL_DIR/modules"
           test -d "dist/$INSTALL_DIR/system/settings"
+          test -s "dist/TILEFINCH/EBOOT.PBP"
+          test -s "dist/TILEFINCH/slot-a/EBOOT.PBP"
+          test -d "dist/TILEFINCH/NOTICES"
 
       - name: Upload complete install folder
         uses: actions/upload-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.4
+          name: LineageOS-PSP-0.1.5
           path: dist/
           if-no-files-found: error
           retention-days: 7
 
   publish:
-    name: Publish LineageOS PSP 0.1.4
+    name: Publish LineageOS PSP 0.1.5
     runs-on: ubuntu-latest
     needs: build
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
@@ -213,46 +250,54 @@ jobs:
       - name: Download installation package
         uses: actions/download-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.4
+          name: LineageOS-PSP-0.1.5
           path: dist
 
       - name: Package and verify LineageOS PSP installation ZIP
         run: |
           set -euo pipefail
-          INSTALL_DIR="LineageOS PSP ver.0.1.4"
+          INSTALL_DIR="LineageOS PSP ver.0.1.5"
           test -s "dist/$INSTALL_DIR/EBOOT.PBP"
           test -d "dist/$INSTALL_DIR/modules"
           test -d "dist/$INSTALL_DIR/system/settings"
+          test -s "dist/TILEFINCH/EBOOT.PBP"
+          test -s "dist/TILEFINCH/slot-a/EBOOT.PBP"
           mkdir -p package
           cp -a "dist/$INSTALL_DIR" package/
+          cp -a "dist/TILEFINCH" package/
           test -s "package/$INSTALL_DIR/EBOOT.PBP"
           test -d "package/$INSTALL_DIR/modules"
           test -d "package/$INSTALL_DIR/system/settings"
+          test -s "package/TILEFINCH/EBOOT.PBP"
+          test -s "package/TILEFINCH/slot-a/EBOOT.PBP"
+          test -d "package/TILEFINCH/NOTICES"
           cd package
-          zip -qr ../LineageOS-PSP-0.1.4.zip "$INSTALL_DIR"
+          zip -qr ../LineageOS-PSP-0.1.5.zip "$INSTALL_DIR" TILEFINCH
           cd ..
-          unzip -Z1 LineageOS-PSP-0.1.4.zip | grep -Fqx "$INSTALL_DIR/EBOOT.PBP"
-          unzip -Z1 LineageOS-PSP-0.1.4.zip | grep -Fq "$INSTALL_DIR/modules/"
-          unzip -Z1 LineageOS-PSP-0.1.4.zip | grep -Fq "$INSTALL_DIR/system/"
+          unzip -Z1 LineageOS-PSP-0.1.5.zip | grep -Fqx "$INSTALL_DIR/EBOOT.PBP"
+          unzip -Z1 LineageOS-PSP-0.1.5.zip | grep -Fq "$INSTALL_DIR/modules/"
+          unzip -Z1 LineageOS-PSP-0.1.5.zip | grep -Fq "$INSTALL_DIR/system/"
+          unzip -Z1 LineageOS-PSP-0.1.5.zip | grep -Fqx "TILEFINCH/EBOOT.PBP"
+          unzip -Z1 LineageOS-PSP-0.1.5.zip | grep -Fqx "TILEFINCH/slot-a/EBOOT.PBP"
  
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.4
-          name: LineageOS PSP 0.1.4
+          tag_name: v0.1.5
+          name: LineageOS PSP 0.1.5
           target_commitish: main
           prerelease: true
           make_latest: false
           overwrite_files: true
           files: |
-            dist/LineageOS PSP ver.0.1.4/EBOOT.PBP
-            LineageOS-PSP-0.1.4.zip
+            dist/LineageOS PSP ver.0.1.5/EBOOT.PBP
+            LineageOS-PSP-0.1.5.zip
           body: |
-            LineageOS PSP 0.1.4 — première version basée sur le code source de CyanogenPSP de Joel16.
+            LineageOS PSP 0.1.5 — navigateur Tilefinch intégré.
 
-            Cette version conserve l'architecture et les fonctionnalités héritées du projet original, avec une première couche d'identité LineageOS PSP.
+            Le bouton Internet de LineageOS PSP lance Tilefinch, compilé depuis sa source amont épinglée. Le transport PSP applique DNS over HTTPS via Cloudflare avec validation TLS et bootstrap DoH épinglé.
 
             Installation : extraire le contenu de ce ZIP directement dans PSP/GAME/.
-            Le ZIP contient le dossier « LineageOS PSP ver.0.1.4/ » avec EBOOT.PBP, modules/ et system/.
-            Copier ce dossier dans PSP/GAME/. Le nom CyanogenPSP reste uniquement celui du dépôt source utilisé pour compiler le système.
-            Le firmware de la PSP n'est pas remplacé.
+            Le ZIP contient deux dossiers : « LineageOS PSP ver.0.1.5/ » et « TILEFINCH/ ». Ne pas déplacer ni renommer TILEFINCH : LineageOS PSP l'utilise pour lancer le navigateur.
+            Le dossier TILEFINCH conserve les slots, les données, les certificats et les notices de licences amont.
+            Le firmware officiel et le menu XMB restent intacts.

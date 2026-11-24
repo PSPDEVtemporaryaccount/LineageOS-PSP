@@ -122,7 +122,7 @@ jobs:
         run: |
           set -euo pipefail
           # The PSPDEV container is Alpine-based and does not include Python by default.
-          apk add --no-cache python3 cmake curl
+          apk add --no-cache python3 cmake curl patch
           sed -i -f overlays/lineage/fix_startup.sed CyanogenPSP/include/utils.c
           sed -i -f overlays/lineage/fix_main.sed CyanogenPSP/main.c
           grep -q 'if (!temp) return value;' CyanogenPSP/include/utils.c

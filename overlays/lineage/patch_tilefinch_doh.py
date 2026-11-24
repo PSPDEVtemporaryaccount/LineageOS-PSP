@@ -28,7 +28,7 @@ if source.count(function_marker) != 1:
     raise SystemExit("Tilefinch fetch_configure_tls() layout changed; refusing an unsafe patch")
 
 if "CURLOPT_DOH_URL" in source or "fetch_doh_bootstrap" in source:
-    if "CURLOPT_DOH_URL" in source and "fetch_doh_bootstrap" in source:
+    if "CURLOPT_DOH_URL" in source and "static struct curl_slist fetch_doh_bootstrap =" in source:
         print("Tilefinch DoH overlay already present")
         raise SystemExit(0)
     raise SystemExit("Partial DoH overlay detected; refusing to patch")
@@ -57,7 +57,7 @@ if source.count(tls_check) != 1:
     raise SystemExit("Tilefinch TLS configuration changed; refusing an unsafe patch")
 
 source = source.replace(tls_check, doh_config, 1)
-if source.count("CURLOPT_DOH_URL") != 1 or source.count("fetch_doh_bootstrap") != 2:
+if source.count("CURLOPT_DOH_URL") != 1 or source.count("static struct curl_slist fetch_doh_bootstrap =") != 1 or source.count("&fetch_doh_bootstrap") != 1:
     raise SystemExit("DoH overlay verification failed")
 
 path.write_text(source, encoding="utf-8")

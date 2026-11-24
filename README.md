@@ -37,7 +37,7 @@ Tilefinch est le navigateur officiel de LineageOS PSP 0.1.5. Le code source comp
 
 ### DNS over HTTPS natif
 
-Le workflow applique un petit overlay à la couche transport PSP de Tilefinch. Le résolveur libcurl est configuré pour utiliser Cloudflare DoH via `https://cloudflare-dns.com/dns-query`, avec validation TLS du serveur DoH et une entrée de bootstrap épinglée pour éviter de devoir résoudre le nom du serveur DoH en DNS classique. Si la configuration DoH ne peut pas être appliquée, la configuration TLS du transport échoue au lieu de revenir silencieusement au DNS classique.
+Le workflow applique un petit overlay à la couche transport PSP de Tilefinch. Le résolveur libcurl est configuré pour utiliser Cloudflare DoH via `https://cloudflare-dns.com/dns-query`, avec validation TLS du serveur DoH, un résolveur asynchrone c-ares compilé pour PSP et une entrée de bootstrap épinglée pour éviter de devoir résoudre le nom du serveur DoH en DNS classique. Si la configuration DoH ne peut pas être appliquée, la configuration TLS du transport échoue au lieu de revenir silencieusement au DNS classique.
 
 Cette modification est appliquée au moment de la compilation ; le dépôt amont Tilefinch reste inchangé. Les licences et notices amont sont conservées dans `TILEFINCH/NOTICES/`.
 

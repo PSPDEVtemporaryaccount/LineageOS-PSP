@@ -155,7 +155,6 @@ jobs:
 
           # Tilefinch's own PSP preset builds the full launcher/browser install
           # tree, including the fonts, TLS roots, A/B slots and third-party notices.
-          cd Tilefinch
           cmake --preset psp
           cmake --build build-preset-psp --target tilefinch-psp-install-tree -j2
           cd ..

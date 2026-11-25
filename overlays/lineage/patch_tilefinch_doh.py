@@ -104,6 +104,12 @@ if "tilefinch_psp_cares" not in transport:
         SHA256=9364b70a12eb59a06830fb488d9357f90100dff0d98b23ea3593a183d43e6f2f
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/psp-transport/cares"
+    PATCH_COMMAND
+        "${CMAKE_COMMAND}"
+        "-DPATCH_SOURCE_DIR=<SOURCE_DIR>"
+        "-DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/../../overlays/lineage/patches/c-ares-1.34.9-psp.patch"
+        "-DPATCH_EXECUTABLE=${PATCH_EXECUTABLE}"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/apply_patch.cmake"
     CMAKE_ARGS
         "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
         "-DCMAKE_INSTALL_PREFIX=${_transport_prefix}"

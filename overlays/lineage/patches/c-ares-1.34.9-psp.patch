@@ -71,6 +71,21 @@
    return 0;
  }
 
+--- a/src/lib/ares_hosts_file.c
++++ b/src/lib/ares_hosts_file.c
+@@ -49,7 +49,11 @@
+ #  include <arpa/inet.h>
+ #endif
+ #include <time.h>
+ 
++#ifndef INET6_ADDRSTRLEN
++#  define INET6_ADDRSTRLEN 46
++#endif
++
+ #ifdef USE_WINSOCK
+ #  define DATABASEPATH         "DatabasePath"
+ #  define WIN_PATH_HOSTS       "\\hosts"
+
 --- a/src/lib/ares_gethostbyaddr.c
 +++ b/src/lib/ares_gethostbyaddr.c
 @@ -39,4 +39,8 @@

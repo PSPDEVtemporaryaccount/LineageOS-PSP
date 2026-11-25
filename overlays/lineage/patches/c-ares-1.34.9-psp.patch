@@ -70,3 +70,15 @@
 +  }
    return 0;
  }
+
+--- a/src/lib/ares_gethostbyaddr.c
++++ b/src/lib/ares_gethostbyaddr.c
+@@ -39,6 +39,10 @@
+ #include "ares_nameser.h"
+ #include "ares_inet_net_pton.h"
+ 
++#ifndef INET6_ADDRSTRLEN
++#  define INET6_ADDRSTRLEN 46
++#endif
++
+ struct addr_query {

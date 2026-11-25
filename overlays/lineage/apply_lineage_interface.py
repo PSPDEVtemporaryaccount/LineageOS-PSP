@@ -40,12 +40,10 @@ boot = r"""int bootAnimation()
     int i;
     int dotX[8] = {196, 218, 240, 262, 284, 284, 240, 196};
     int dotY[8] = {151, 151, 151, 151, 151, 164, 164, 164};
-    int firstBootState;
-
-    // Keep the existing preference file compatible with CyanogenPSP settings.
+    // Keep the existing preference files compatible with CyanogenPSP settings.
     bootAnimActivator = setFileDefaultsInt(
         "system/boot/bootAnimActivator.bin", 1, bootAnimActivator);
-    firstBootState = setFileDefaultsInt(
+    firstBoot = setFileDefaultsInt(
         "system/settings/boot.bin", 1, firstBoot);
 
     /* Native OSLib animation: no external image assets and no extra memory
@@ -101,9 +99,8 @@ boot = r"""int bootAnimation()
     if (osl_quit)
         return 0;
 
-    if (firstBootState == 1)
-        displayLangSelection("system/settings/language");
-
+    /* Preserve the stable startup path used by the current LineageOS layer.
+       The first-boot welcome and normal lock-screen/home flow remain intact. */
     firstBootInitiation();
     return 0;
 }"""

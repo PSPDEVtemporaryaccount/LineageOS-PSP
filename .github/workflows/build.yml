@@ -1,4 +1,4 @@
-name: Build LineageOS PSP 0.1.5
+name: Build LineageOS PSP 0.1.6
 
 on:
   push:
@@ -71,7 +71,7 @@ jobs:
 
           # Product identity and release version.
           sed -i 's/^TARGET = CyanogenPSP$/TARGET = LineageOS-PSP/' Makefile
-          sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.5/' Makefile
+          sed -i 's/^VERSION[[:space:]]*=.*/VERSION = 0.1.6/' Makefile
           # Emit a linker map so PPSSPP crash addresses can be mapped back to symbols.
           sed -i 's|^LDFLAGS =.*|LDFLAGS = -Wl,-Map,LineageOS-PSP.map|' Makefile
           sed -i 's/-Wall -Werror/-Wall/' Makefile
@@ -99,7 +99,7 @@ jobs:
 
           # Fail early if any of the required overlays did not apply.
           grep -q '^TARGET = LineageOS-PSP$' Makefile
-          grep -q '^VERSION = 0.1.5$' Makefile
+          grep -q '^VERSION = 0.1.6$' Makefile
           grep -q 'PSP_MODULE_INFO("LineageOS PSP", 1, 0, 2);' main.c
           grep -q 'ScePspDateTime time;' homeMenu.c
           grep -q 'int imposeSetVolume(int value);' homeMenu.c
@@ -127,8 +127,9 @@ jobs:
           sed -i -f overlays/lineage/fix_main.sed CyanogenPSP/main.c
           grep -q 'if (!temp) return value;' CyanogenPSP/include/utils.c
           grep -q 'if (temp)' CyanogenPSP/main.c
-          python3 overlays/lineage/disable_bootanimation.py
-          grep -q 'boot animation temporarily disabled' CyanogenPSP/main.c
+          python3 overlays/lineage/apply_lineage_interface.py
+          grep -q 'LineageOS PSP animated boot sequence' CyanogenPSP/main.c
+          grep -q '"LINEAGEOS PSP"' CyanogenPSP/homeMenu.c
 
       - name: Fetch and build Tilefinch with native DNS over HTTPS
         shell: bash
@@ -210,7 +211,7 @@ jobs:
       - name: Upload crash-diagnostics symbols
         uses: actions/upload-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.5-debug-symbols
+          name: LineageOS-PSP-0.1.6-debug-symbols
           path: debug-symbols/
           if-no-files-found: error
           retention-days: 30
@@ -229,7 +230,7 @@ jobs:
       - name: Stage complete install folder for distribution
         run: |
           set -euo pipefail
-          INSTALL_DIR="LineageOS PSP ver.0.1.5"
+          INSTALL_DIR="LineageOS PSP ver.0.1.6"
           mkdir -p "dist/$INSTALL_DIR"
           cp -a CyanogenPSP/EBOOT.PBP CyanogenPSP/modules CyanogenPSP/system "dist/$INSTALL_DIR/"
           test -s "dist/$INSTALL_DIR/EBOOT.PBP"
@@ -242,13 +243,13 @@ jobs:
       - name: Upload complete install folder
         uses: actions/upload-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.5
+          name: LineageOS-PSP-0.1.6
           path: dist/
           if-no-files-found: error
           retention-days: 7
 
   publish:
-    name: Publish LineageOS PSP 0.1.5
+    name: Publish LineageOS PSP 0.1.6
     runs-on: ubuntu-latest
     needs: build
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
@@ -256,13 +257,13 @@ jobs:
       - name: Download installation package
         uses: actions/download-artifact@v4
         with:
-          name: LineageOS-PSP-0.1.5
+          name: LineageOS-PSP-0.1.6
           path: dist
 
       - name: Package and verify LineageOS PSP installation ZIP
         run: |
           set -euo pipefail
-          INSTALL_DIR="LineageOS PSP ver.0.1.5"
+          INSTALL_DIR="LineageOS PSP ver.0.1.6"
           test -s "dist/$INSTALL_DIR/EBOOT.PBP"
           test -d "dist/$INSTALL_DIR/modules"
           test -d "dist/$INSTALL_DIR/system/settings"
@@ -278,32 +279,32 @@ jobs:
           test -s "package/TILEFINCH/slot-a/EBOOT.PBP"
           test -d "package/TILEFINCH/NOTICES"
           cd package
-          zip -qr ../LineageOS-PSP-0.1.5.zip "$INSTALL_DIR" TILEFINCH
+          zip -qr ../LineageOS-PSP-0.1.6.zip "$INSTALL_DIR" TILEFINCH
           cd ..
-          unzip -Z1 LineageOS-PSP-0.1.5.zip | grep -Fqx "$INSTALL_DIR/EBOOT.PBP"
-          unzip -Z1 LineageOS-PSP-0.1.5.zip | grep -Fq "$INSTALL_DIR/modules/"
-          unzip -Z1 LineageOS-PSP-0.1.5.zip | grep -Fq "$INSTALL_DIR/system/"
-          unzip -Z1 LineageOS-PSP-0.1.5.zip | grep -Fqx "TILEFINCH/EBOOT.PBP"
-          unzip -Z1 LineageOS-PSP-0.1.5.zip | grep -Fqx "TILEFINCH/slot-a/EBOOT.PBP"
+          unzip -Z1 LineageOS-PSP-0.1.6.zip | grep -Fqx "$INSTALL_DIR/EBOOT.PBP"
+          unzip -Z1 LineageOS-PSP-0.1.6.zip | grep -Fq "$INSTALL_DIR/modules/"
+          unzip -Z1 LineageOS-PSP-0.1.6.zip | grep -Fq "$INSTALL_DIR/system/"
+          unzip -Z1 LineageOS-PSP-0.1.6.zip | grep -Fqx "TILEFINCH/EBOOT.PBP"
+          unzip -Z1 LineageOS-PSP-0.1.6.zip | grep -Fqx "TILEFINCH/slot-a/EBOOT.PBP"
  
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.5
-          name: LineageOS PSP 0.1.5
+          tag_name: v0.1.6
+          name: LineageOS PSP 0.1.6
           target_commitish: main
           prerelease: true
           make_latest: false
           overwrite_files: true
           files: |
-            dist/LineageOS PSP ver.0.1.5/EBOOT.PBP
-            LineageOS-PSP-0.1.5.zip
+            dist/LineageOS PSP ver.0.1.6/EBOOT.PBP
+            LineageOS-PSP-0.1.6.zip
           body: |
-            LineageOS PSP 0.1.5 — navigateur Tilefinch intégré.
+            LineageOS PSP 0.1.6 — navigateur Tilefinch intégré.
 
             Le bouton Internet de LineageOS PSP lance Tilefinch, compilé depuis sa source amont épinglée. Le transport PSP applique DNS over HTTPS via Cloudflare avec validation TLS et bootstrap DoH épinglé.
 
             Installation : extraire le contenu de ce ZIP directement dans PSP/GAME/.
-            Le ZIP contient deux dossiers : « LineageOS PSP ver.0.1.5/ » et « TILEFINCH/ ». Ne pas déplacer ni renommer TILEFINCH : LineageOS PSP l'utilise pour lancer le navigateur.
+            Le ZIP contient deux dossiers : « LineageOS PSP ver.0.1.6/ » et « TILEFINCH/ ». Ne pas déplacer ni renommer TILEFINCH : LineageOS PSP l'utilise pour lancer le navigateur.
             Le dossier TILEFINCH conserve les slots, les données, les certificats et les notices de licences amont.
             Le firmware officiel et le menu XMB restent intacts.

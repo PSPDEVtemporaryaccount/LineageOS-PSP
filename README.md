@@ -14,7 +14,7 @@ LineageOS PSP est une évolution du projet homebrew **CyanogenPSP** de Joel16. L
 - Révision OSLib utilisée : `c9ab75c7a2b9a255ed126a21288f9f4c389fb266`
 - Licence OSLib : GPL-2.0, reproduite dans [LICENSE-OSLib](LICENSE-OSLib).
 
-Les crédits et licences des composants tiers sont conservés. Les adaptations propres à LineageOS PSP sont appliquées pendant la compilation, sans modifier le dépôt original de Joel16. L'écran d'accueil reçoit une barre système sombre avec l'identité LineageOS PSP et un accent bleu. Les références d'identité héritées `CyanogenPSP` sont remplacées dans les fichiers sources compilés par `LineageOS PSP ver.0.1.6`. Le nom du dossier de travail interne reste `CyanogenPSP` uniquement pour les opérations de compilation.
+Les crédits et licences des composants tiers sont conservés. Les adaptations propres à LineageOS PSP sont appliquées pendant la compilation, sans modifier le dépôt original de Joel16. L'écran d'accueil reçoit une barre système sombre avec l'identité LineageOS PSP, un accent bleu et un dock visuel qui regroupe les raccourcis. Les références d'identité héritées `CyanogenPSP` sont remplacées dans les fichiers sources compilés par `LineageOS PSP ver.0.1.6`. Le nom du dossier de travail interne reste `CyanogenPSP` uniquement pour les opérations de compilation.
 
 ## Couches LineageOS PSP 0.1.6
 

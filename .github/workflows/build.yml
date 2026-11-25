@@ -10,6 +10,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: lineageos-psp-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build CyanogenPSP-derived LineageOS PSP

@@ -38,8 +38,8 @@ boot = r"""int bootAnimation()
     int frame;
     int phase;
     int i;
-    int dotX[8] = {196, 218, 240, 262, 284, 284, 240, 196};
-    int dotY[8] = {151, 151, 151, 151, 151, 164, 164, 164};
+    int dotX[8] = {196, 208, 220, 232, 244, 256, 268, 280};
+    int dotY[8] = {151, 151, 151, 151, 151, 151, 151, 151};
     // Keep the existing preference files compatible with CyanogenPSP settings.
     bootAnimActivator = setFileDefaultsInt(
         "system/boot/bootAnimActivator.bin", 1, bootAnimActivator);
@@ -118,6 +118,11 @@ image_at = home.find(image_marker, home_start)
 if image_at < 0:
     raise SystemExit("Could not find home wallpaper draw call")
 home = home[:image_at] + image_marker + """
+        /* A restrained dock keeps the inherited app shortcuts visually grouped. */
+        oslDrawFillRect(87, 185, 393, 239, RGB(11, 20, 36));
+        oslDrawRect(87, 185, 393, 239, RGB(35, 65, 98));
+        oslDrawFillRect(104, 186, 376, 188, RGB(61, 150, 235));
+
         /* LineageOS PSP system bar and project identity. */
         oslDrawFillRect(0, 0, 480, 23, RGB(10, 18, 34));
         oslDrawFillRect(0, 22, 480, 24, RGB(61, 150, 235));

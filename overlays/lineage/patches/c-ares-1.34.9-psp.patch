@@ -73,7 +73,7 @@
 
 --- a/src/lib/ares_gethostbyaddr.c
 +++ b/src/lib/ares_gethostbyaddr.c
-@@ -39,6 +39,10 @@
+@@ -39,4 +39,8 @@
  #include "ares_nameser.h"
  #include "ares_inet_net_pton.h"
  
@@ -85,7 +85,7 @@
 
 --- a/src/lib/ares_getnameinfo.c
 +++ b/src/lib/ares_getnameinfo.c
-@@ -282,75 +282,18 @@
+@@ -282,74 +282,18 @@
  static char *lookup_service(unsigned short port, unsigned int flags, char *buf,
                              size_t buflen)
  {

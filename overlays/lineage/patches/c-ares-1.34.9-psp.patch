@@ -85,7 +85,7 @@
 
 --- a/src/lib/ares_getnameinfo.c
 +++ b/src/lib/ares_getnameinfo.c
-@@ -281,73 +281,24 @@
+@@ -282,75 +282,18 @@
  static char *lookup_service(unsigned short port, unsigned int flags, char *buf,
                              size_t buflen)
  {

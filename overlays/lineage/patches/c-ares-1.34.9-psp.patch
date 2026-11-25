@@ -1,0 +1,9 @@
+--- a/src/lib/ares_addrinfo_localhost.c
++++ b/src/lib/ares_addrinfo_localhost.c
+@@ -90,7 +90,7 @@
+ 
+     memset(sin6, 0, sizeof(*sin6));
+-    memcpy(&sin6->sin6_addr.s6_addr, adata, sizeof(sin6->sin6_addr.s6_addr));
++    memcpy(&sin6->sin6_addr, adata, sizeof(sin6->sin6_addr));
+     sin6->sin6_family = AF_INET6;
+     sin6->sin6_port   = htons(port);

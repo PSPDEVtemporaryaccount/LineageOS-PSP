@@ -107,7 +107,7 @@ if "tilefinch_psp_cares" not in transport:
     PATCH_COMMAND
         "${CMAKE_COMMAND}"
         "-DPATCH_SOURCE_DIR=<SOURCE_DIR>"
-        "-DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/../../overlays/lineage/patches/c-ares-1.34.9-psp.patch"
+        "-DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/../overlays/lineage/patches/c-ares-1.34.9-psp.patch"
         "-DPATCH_EXECUTABLE=${PATCH_EXECUTABLE}"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/apply_patch.cmake"
     CMAKE_ARGS

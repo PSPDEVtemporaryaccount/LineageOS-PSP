@@ -191,7 +191,7 @@
  }
 --- a/src/lib/ares_set_socket_functions.c
 +++ b/src/lib/ares_set_socket_functions.c
-@@ -80,7 +80,7 @@
+@@ -80,6 +80,6 @@
 -#ifndef HAVE_WRITEV
 +#if !defined(HAVE_WRITEV) && !defined(HAVE_SYS_UIO_H)
  /* Structure for scatter/gather I/O. */

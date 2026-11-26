@@ -110,6 +110,36 @@ if "LineageOS PSP animated boot sequence" not in main:
 main_path.write_text(main, encoding="utf-8")
 
 home = home_path.read_text(encoding="utf-8")
+
+# Normalize legacy five-argument calls for the modern six-argument OSLib API.
+import re
+
+def normalize_intrafont_calls(source: str) -> str:
+    pattern = re.compile(r"oslIntraFontSetStyle\\(([^;]*?)\\);", re.DOTALL)
+
+    def normalize(match):
+        args = match.group(1)
+        parts, current, depth = [], [], 0
+        for char in args:
+            if char == "," and depth == 0:
+                parts.append("".join(current).strip())
+                current = []
+                continue
+            current.append(char)
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+        parts.append("".join(current).strip())
+        if len(parts) == 5:
+            parts.insert(4, "0")
+        elif len(parts) != 6:
+            raise SystemExit("Unexpected oslIntraFontSetStyle argument count: " + str(len(parts)))
+        return "oslIntraFontSetStyle(" + ", ".join(parts) + ");"
+
+    return pattern.sub(normalize, source)
+
+home = normalize_intrafont_calls(home)
 home_start = home.find("void home()")
 if home_start < 0:
     raise SystemExit("Could not find home() in homeMenu.c")

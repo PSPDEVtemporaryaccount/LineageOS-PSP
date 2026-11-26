@@ -115,7 +115,7 @@ home = home_path.read_text(encoding="utf-8")
 import re
 
 def normalize_intrafont_calls(source: str) -> str:
-    pattern = re.compile(r"oslIntraFontSetStyle\\(([^;]*?)\\);", re.DOTALL)
+    pattern = re.compile(r"oslIntraFontSetStyle\(([^;]*?)\);", re.DOTALL)
 
     def normalize(match):
         args = match.group(1)

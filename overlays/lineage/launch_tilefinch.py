@@ -28,9 +28,9 @@ replacement = """void internet() // Launches the integrated Tilefinch browser
     {
         oslStartDrawing();
         oslClearScreen(RGB(12, 18, 30));
-        oslIntraFontSetStyle(Roboto, 0.65f, WHITE, 0, INTRAFONT_ALIGN_CENTER);
+        oslIntraFontSetStyle(Roboto, 0.65f, WHITE, 0, 0, INTRAFONT_ALIGN_CENTER);
         oslDrawStringf(240, 92, "Tilefinch is not installed");
-        oslIntraFontSetStyle(Roboto, 0.48f, WHITE, 0, INTRAFONT_ALIGN_CENTER);
+        oslIntraFontSetStyle(Roboto, 0.48f, WHITE, 0, 0, INTRAFONT_ALIGN_CENTER);
         oslDrawStringf(240, 122, "Copy the TILEFINCH folder to PSP/GAME/");
         oslDrawStringf(240, 146, "Then reopen Internet from LineageOS PSP");
         oslEndDrawing();

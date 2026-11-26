@@ -72,9 +72,9 @@ boot = r"""int bootAnimation()
         oslDrawLine(222, 114, 253, 114, RGB(220, 239, 255));
         oslDrawRect(193, 59, 287, 144, RGB(40, 89, 139));
 
-        oslIntraFontSetStyle(Roboto, 0.82f, WHITE, 0, INTRAFONT_ALIGN_CENTER);
+        oslIntraFontSetStyle(Roboto, 0.82f, WHITE, 0, 0, INTRAFONT_ALIGN_CENTER);
         oslDrawStringf(240, 165, "LineageOS PSP");
-        oslIntraFontSetStyle(Roboto, 0.42f, RGB(157, 190, 222), 0,
+        oslIntraFontSetStyle(Roboto, 0.42f, RGB(157, 190, 222), 0, 0,
                              INTRAFONT_ALIGN_CENTER);
         oslDrawStringf(240, 187, "A new way to use your PSP");
 
@@ -126,7 +126,7 @@ home = home[:image_at] + image_marker + """
         /* LineageOS PSP system bar and project identity. */
         oslDrawFillRect(0, 0, 480, 23, RGB(10, 18, 34));
         oslDrawFillRect(0, 22, 480, 24, RGB(61, 150, 235));
-        oslIntraFontSetStyle(Roboto, 0.46f, WHITE, 0,
+        oslIntraFontSetStyle(Roboto, 0.46f, WHITE, 0, 0,
                              INTRAFONT_ALIGN_LEFT);
         oslDrawStringf(16, 5, "LINEAGEOS PSP");""" + home[image_at + len(image_marker):]
 

@@ -175,9 +175,12 @@ jobs:
       - name: Configure application heap for PPSSPP
         run: |
           set -euo pipefail
-          # The upstream CyanogenPSP source explicitly documents 53248 KiB for PPSSPP testing.
-          sed -i 's/PSP_HEAP_SIZE_KB(20\*1024)/PSP_HEAP_SIZE_KB(53248)/' CyanogenPSP/main.c
-          grep -q 'PSP_HEAP_SIZE_KB(53248)' CyanogenPSP/main.c
+          # The upstream 53248 KiB heap is explicitly for PPSSPP testing.
+          # Keep the PSP 3000 hardware build at the upstream 20 MiB setting so
+          # OSLib, kernel PRX modules and the system UI retain working memory.
+          sed -i 's/PSP_HEAP_SIZE_KB(53248)/PSP_HEAP_SIZE_KB(20*1024)/' CyanogenPSP/main.c
+          grep -q 'PSP_HEAP_SIZE_KB(20\*1024)' CyanogenPSP/main.c
+          ! grep -q 'PSP_HEAP_SIZE_KB(53248)' CyanogenPSP/main.c
 
       - name: Compile LineageOS PSP
         run: |
